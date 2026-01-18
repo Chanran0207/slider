@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Artmug Slider</title>
+<style>
+  body {
+    margin: 0;
+    background: transparent;
+  }
+
+  .slider {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
+  .slides {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+
+  .slide {
+    min-width: 100%;
+  }
+
+  .slide img {
+    width: 100%;
+    display: block;
+  }
+
+  .indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .dot.active {
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="slider" id="slider">
+  <div class="slides" id="slides">
+    <a class="slide" href="https://ifh.cc/v-zvw1P8" target="_blank">
+      <img src="https://i.ifh.cc/zvw1P8.gif">
+    </a>
+    <a class="slide" href="https://ifh.cc/v-ny6vc5" target="_blank">
+      <img src="https://i.ifh.cc/ny6vc5.gif">
+    </a>
+    <a class="slide" href="https://ifh.cc/v-Q4RtKg" target="_blank">
+      <img src="https://i.ifh.cc/Q4RtKg.gif">
+    </a>
+  </div>
+
+  <div class="indicators" id="indicators"></div>
+</div>
+
+<script>
+  const slides = document.getElementById("slides");
+  const indicators = document.getElementById("indicators");
+  const total = slides.children.length;
+  let index = 0;
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement("div");
+    dot.className = "dot";
+    dot.onclick = () => moveTo(i);
+    indicators.appendChild(dot);
+  }
+
+  function updateDots() {
+    [...indicators.children].forEach((d, i) =>
+      d.classList.toggle("active", i === index)
+    );
+  }
+
+  function moveTo(i) {
+    index = i;
+    slides.style.transform = `translateX(-${i * 100}%)`;
+    updateDots();
+  }
+
+  let timer = setInterval(() => {
+    index = (index + 1) % total;
+    moveTo(index);
+  }, 4000);
+
+  document.getElementById("slider").addEventListener("mouseenter", () => clearInterval(timer));
+  document.getElementById("slider").addEventListener("mouseleave", () => {
+    timer = setInterval(() => {
+      index = (index + 1) % total;
+      moveTo(index);
+    }, 4000);
+  });
+
+  updateDots();
+</script>
+
+</body>
+</html>
