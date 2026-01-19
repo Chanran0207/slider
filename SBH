@@ -1,116 +1,116 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>Artmug Slider</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Slider</title>
+
 <style>
-  body {
-    margin: 0;
-    background: transparent;
-  }
+body {
+  margin: 0;
+  background: transparent;
+}
 
-  .slider {
-    max-width: 700px;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    border-radius: 16px;
-  }
+.slider {
+  max-width: 700px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
 
-  .slides {
-    display: flex;
-    transition: transform 0.5s ease;
-  }
+.slides {
+  display: flex;
+  transition: transform 0.4s ease;
+}
 
-  .slide {
-    min-width: 100%;
-  }
+.slide {
+  min-width: 100%;
+}
 
-  .slide img {
-    width: 100%;
-    display: block;
-  }
+.slide img {
+  width: 100%;
+  display: block;
+}
 
-  .indicators {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 6px;
-  }
+/* 인디케이터 */
+.dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
 
-  .dot {
-    width: 8px;
-    height: 8px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 50%;
-    cursor: pointer;
-  }
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+}
 
-  .dot.active {
-    background: #fff;
-  }
+.dot.active {
+  background: white;
+}
 </style>
 </head>
-<body>
 
+<body>
 <div class="slider" id="slider">
   <div class="slides" id="slides">
-    <a class="slide" href="https://ifh.cc/v-zvw1P8" target="_blank">
-      <img src="https://i.ifh.cc/zvw1P8.gif">
-    </a>
-    <a class="slide" href="https://ifh.cc/v-ny6vc5" target="_blank">
-      <img src="https://i.ifh.cc/ny6vc5.gif">
-    </a>
-    <a class="slide" href="https://ifh.cc/v-Q4RtKg" target="_blank">
-      <img src="https://i.ifh.cc/Q4RtKg.gif">
-    </a>
+    <div class="slide">
+      <img src="https://i.ifh.cc/zvw1P8.gif" />
+    </div>
+    <div class="slide">
+      <img src="https://i.ifh.cc/ny6vc5.gif" />
+    </div>
+    <div class="slide">
+      <img src="https://i.ifh.cc/Q4RtKg.gif" />
+    </div>
   </div>
 
-  <div class="indicators" id="indicators"></div>
+  <div class="dots" id="dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
 </div>
 
 <script>
-  const slides = document.getElementById("slides");
-  const indicators = document.getElementById("indicators");
-  const total = slides.children.length;
-  let index = 0;
+let index = 0;
+const slides = document.getElementById("slides");
+const dots = document.querySelectorAll(".dot");
+const total = dots.length;
 
-  for (let i = 0; i < total; i++) {
-    const dot = document.createElement("div");
-    dot.className = "dot";
-    dot.onclick = () => moveTo(i);
-    indicators.appendChild(dot);
-  }
+function update() {
+  slides.style.transform = `translateX(-${index * 100}%)`;
+  dots.forEach(d => d.classList.remove("active"));
+  dots[index].classList.add("active");
+}
 
-  function updateDots() {
-    [...indicators.children].forEach((d, i) =>
-      d.classList.toggle("active", i === index)
-    );
-  }
+// 자동 슬라이드
+let timer = setInterval(next, 3000);
 
-  function moveTo(i) {
-    index = i;
-    slides.style.transform = `translateX(-${i * 100}%)`;
-    updateDots();
-  }
+function next() {
+  index = (index + 1) % total;
+  update();
+}
 
-  let timer = setInterval(() => {
-    index = (index + 1) % total;
-    moveTo(index);
-  }, 4000);
+// 터치 스와이프
+let startX = 0;
 
-  document.getElementById("slider").addEventListener("mouseenter", () => clearInterval(timer));
-  document.getElementById("slider").addEventListener("mouseleave", () => {
-    timer = setInterval(() => {
-      index = (index + 1) % total;
-      moveTo(index);
-    }, 4000);
-  });
+slides.addEventListener("touchstart", e => {
+  clearInterval(timer);
+  startX = e.touches[0].clientX;
+});
 
-  updateDots();
+slides.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+  if (startX - endX > 50) index = (index + 1) % total;
+  if (endX - startX > 50) index = (index - 1 + total) % total;
+  update();
+  timer = setInterval(next, 3000);
+});
 </script>
-
 </body>
 </html>
